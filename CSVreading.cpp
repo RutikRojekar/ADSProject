@@ -2,6 +2,7 @@
 #include<fstream>
 #include<string.h>
 #include<string>
+#include<limits>
 #include<iomanip>
 using namespace std;
 int main()
@@ -21,18 +22,24 @@ int main()
         {
             case 1:
             infile.open("Sample.csv");
-            cout<<"\n-----------------------------------------------------------------------------------------------------------\n";
-            cout<<"            STATE                        Confirmed          RECOVERED          DEATHS          ACTIVE                       ";
-            cout<<"\n-----------------------------------------------------------------------------------------------------------\n";
+            cout<<"\n----------------------------------------------------------------------------------------------------------------------------\n";
+            cout<<"            STATE                                    Confirmed               RECOVERED          DEATHS          ACTIVE                       ";
+            cout<<"\n----------------------------------------------------------------------------------------------------------------------------\n";
             infile.seekg(0);
             while(infile.good())
             {
+                if(infile.tellg()==ios::beg)
+                {
+                    infile.ignore(numeric_limits<streamsize>::max(),'\n');
+
+                }
                 getline(infile,stateName,',');
                 getline(infile,confirmed,',');
                 getline(infile,recovered,',');
                 getline(infile,deaths,',');
                 getline(infile,active,'\n');
-                cout<<left<<setw(25)<<stateName<<"\t\t"<<setw(8)<<confirmed<<setw(8)<<"\t"<<recovered<<"\t\t"<<setw(8)<<deaths<<"\t"<<setw(8)<<active<<endl;
+                if(!infile.eof())
+                cout<<left<<setw(40)<<stateName<<"\t\t"<<setw(15)<<confirmed<<setw(8)<<"\t"<<recovered<<"\t\t"<<setw(8)<<deaths<<"\t"<<setw(8)<<active<<endl;
             }
             infile.close();
             break;
@@ -43,8 +50,9 @@ int main()
             infile.open("Sample.csv");
             infile.seekg(0);
             flag=false;
-            while(getline(infile,stateName,',') && !flag)
+            while( infile.good()&& !flag)
             {
+                getline(infile,stateName,',');
                 getline(infile,confirmed,',');
                 getline(infile,recovered,',');
                 getline(infile,deaths,',');
@@ -52,17 +60,19 @@ int main()
                 if(temp==stateName)
                 {
                     cout<<"\nSTATE : "<<stateName<<"\nCONFIRMED : "<<confirmed<<"\nRECOVERED : "<<recovered<<"\nDEATHS : "<<deaths<<"\nACTIVE : "<<active<<endl;
+                    flag=true;
                 }
             }
             infile.close();
+
             break;
         }
-            stateName="";
+        stateName="";
             recovered="";
             deaths="";
             active="";
             confirmed="";
         cout<<"\nDo you want to continue ? ";
         cin>>yn;
-    }while(yn=='y'||yn!='Y');
+    }while(yn=='y'||yn=='Y');
 }
